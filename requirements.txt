@@ -1,0 +1,10 @@
+﻿# Core Data & ML Libraries
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Desktop Modern GUI
+customtkinter>=6.0.0
+darkdetect>=0.8.0
+
+# Optional Web Dashboard
+# Built using standard library (http.server + json) - zero additional installs needed!

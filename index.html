@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CardioGuard AI is an advanced clinical machine learning system for cardiovascular risk assessment based on 13 physiological and stress test biomarkers.">
+  <title>CardioGuard AI — Heart Disease Risk Assessment System</title>
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body data-theme="violet-green">
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="brand-wrapper">
+      <div class="brand-icon">
+        <span class="heart-beating" id="headerHeartIcon">🫀</span>
+      </div>
+      <div class="brand-text-block">
+        <h1 class="brand-title">CardioGuard AI</h1>
+        <span class="brand-subtitle">Clinical Decision Support System</span>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div class="header-status-pill">
+        <span class="pulse-dot"></span>
+        <span>Cleveland UCI Benchmark (86.9% Acc)</span>
+      </div>
+
+      <!-- Theme Switcher -->
+      <div class="theme-selector-wrap" title="Switch Interface Theme">
+        <span>🎨</span>
+        <select id="themeSelect" class="theme-select" aria-label="Select Theme">
+          <option value="violet-green" selected>💜 Violet & Emerald</option>
+          <option value="cyber-violet">🌌 Cyberpunk Violet</option>
+          <option value="emerald-glow">🌿 Emerald & Violet</option>
+          <option value="light-violet">☀️ Violet Light</option>
+        </select>
+      </div>
+
+      <!-- Sound FX Toggle -->
+      <button id="btnSoundToggle" class="icon-button" title="Toggle Heartbeat Sound FX" aria-label="Toggle Heartbeat Audio">
+        <span id="soundIcon">🔇</span>
+      </button>
+
+      <!-- Print Clinical Report -->
+      <button id="btnPrintReport" class="icon-button" title="Print / Export Assessment Report" aria-label="Print Report">
+        <span>🖨️</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Dashboard -->
+  <main class="dashboard-container">
+    <!-- Left Column: Patient Biomarkers Input Form -->
+    <section class="glass-panel" aria-labelledby="formHeading">
+      <div class="panel-header">
+        <h2 id="formHeading" class="panel-title">
+          <span>📋</span> Patient Clinical Biomarkers
+        </h2>
+        <span class="badge-tag">13 Parameters</span>
+      </div>
+
+      <!-- Preset Patient Profiles Bar -->
+      <div class="presets-container">
+        <div class="presets-label">
+          <span>⚡ Quick Clinical Personas</span>
+          <span style="font-size: 0.7rem; color: var(--text-muted);">One-click case loads</span>
+        </div>
+        <div class="preset-chip-row">
+          <button type="button" class="preset-chip active" id="presetAthlete">
+            <span>🏃</span> Young Athlete (Low Risk)
+          </button>
+          <button type="button" class="preset-chip" id="presetAdult">
+            <span>💼</span> Average Adult (Moderate)
+          </button>
+          <button type="button" class="preset-chip" id="presetHighRisk">
+            <span>⚠️</span> Symptomatic Patient (High Risk)
+          </button>
+          <button type="button" class="preset-chip" id="presetCritical">
+            <span>🚨</span> Critical Emergency
+          </button>
+          <button type="button" class="preset-chip btn-random" id="btnRandomPatient">
+            <span>🎲</span> Random Patient Data
+          </button>
+        </div>
+      </div>
+
+      <!-- Form Section 1: Demographics & Baseline Vitals -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <span>👤</span> Demographics & Baseline Vitals
+        </div>
+
+        <div class="grid-2">
+          <!-- Age -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" for="age">Age</label>
+              <span id="pill_age" class="status-pill emerald">32 yrs (Young)</span>
+            </div>
+            <div class="dual-control-wrap">
+              <div class="input-stepper-row">
+                <button type="button" class="step-btn" data-step="age:-1">−</button>
+                <input type="number" id="age" class="number-input" value="32" min="18" max="95">
+                <span class="input-unit">yrs</span>
+                <button type="button" class="step-btn" data-step="age:1">+</button>
+              </div>
+              <input type="range" id="slider_age" class="range-slider" min="18" max="95" value="32">
+              <div class="slider-limits"><span>18</span><span>55</span><span>95</span></div>
+            </div>
+          </div>
+
+          <!-- Sex -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" for="sex">Biological Sex</label>
+              <span id="pill_sex" class="status-pill emerald">Female</span>
+            </div>
+            <select id="sex" class="select-control">
+              <option value="0" selected>Female</option>
+              <option value="1">Male</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 14px;">
+          <!-- Resting Blood Pressure -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" for="trestbps">Resting Blood Pressure</label>
+              <span id="pill_trestbps" class="status-pill emerald">Optimal (&lt;120)</span>
+            </div>
+            <div class="dual-control-wrap">
+              <div class="input-stepper-row">
+                <button type="button" class="step-btn" data-step="trestbps:-5">−</button>
+                <input type="number" id="trestbps" class="number-input" value="112" min="80" max="210">
+                <span class="input-unit">mmHg</span>
+                <button type="button" class="step-btn" data-step="trestbps:5">+</button>
+              </div>
+              <input type="range" id="slider_trestbps" class="range-slider" min="80" max="210" value="112">
+              <div class="slider-limits"><span>80</span><span>120 (Normal)</span><span>210</span></div>
+            </div>
+          </div>
+
+          <!-- Serum Cholesterol -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" for="chol">Serum Cholesterol</label>
+              <span id="pill_chol" class="status-pill emerald">Desirable (&lt;200)</span>
+            </div>
+            <div class="dual-control-wrap">
+              <div class="input-stepper-row">
+                <button type="button" class="step-btn" data-step="chol:-10">−</button>
+                <input type="number" id="chol" class="number-input" value="175" min="110" max="560">
+                <span class="input-unit">mg/dL</span>
+                <button type="button" class="step-btn" data-step="chol:10">+</button>
+              </div>
+              <input type="range" id="slider_chol" class="range-slider" min="110" max="560" value="175">
+              <div class="slider-limits"><span>110</span><span>200 (Desirable)</span><span>560</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Section 2: Symptoms & Electrocardiography -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <span>🩸</span> Symptoms & Electrocardiography
+        </div>
+
+        <div class="grid-2">
+          <!-- Chest Pain Type -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" for="cp">Chest Pain Type</label>
+              <span id="pill_cp" class="status-pill emerald">Atypical</span>
+            </div>
+            <select id="cp" class="select-control">
+              <option value="0">0: Typical Angina</option>
+              <option value="1" selected>1: Atypical Angina</option>
+              <option value="2">2: Non-Anginal Pain</option>
+              <option value="3">3: Asymptomatic</option>
+            </select>
+          </div>
+
+          <!-- Fasting Blood Sugar -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" for="fbs">Fasting Blood Sugar</label>
+              <span id="pill_fbs" class="status-pill emerald">Normal (&le; 120)</span>
+            </div>
+            <select id="fbs" class="select-control">
+              <option value="0" selected>Normal (&le; 120 mg/dL)</option>
+              <option value="1">Elevated (&gt; 120 mg/dL)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 14px;">
+          <div class="label-row">
+            <label class="form-label" for="restecg">Resting Electrocardiogram (ECG)</label>
+            <span id="pill_restecg" class="status-pill emerald">Normal</span>
+          </div>
+          <select id="restecg" class="select-control">
+            <option value="0" selected>0: Normal Sinus Rhythm</option>
+            <option value="1">1: ST-T Wave Abnormality</option>
+            <option value="2">2: Left Ventricular Hypertrophy (LVH)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Form Section 3: Exercise Stress Test Diagnostics -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <span>🏃</span> Exercise Stress Test Diagnostics
+        </div>
+
+        <div class="grid-2">
+          <!-- Max Heart Rate -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" for="thalach">Max Heart Rate</label>
+              <span id="pill_thalach" class="status-pill emerald">Good Reserve</span>
+            </div>
+            <div class="dual-control-wrap">
+              <div class="input-stepper-row">
+                <button type="button" class="step-btn" data-step="thalach:-5">−</button>
+                <input type="number" id="thalach" class="number-input" value="182" min="65" max="220">
+                <span class="input-unit">bpm</span>
+                <button type="button" class="step-btn" data-step="thalach:5">+</button>
+              </div>
+              <input type="range" id="slider_thalach" class="range-slider" min="65" max="220" value="182">
+              <div class="slider-limits"><span>65</span><span>150</span><span>220</span></div>
+            </div>
+          </div>
+
+          <!-- Exercise Induced Angina -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" for="exang">Exercise Induced Angina</label>
+              <span id="pill_exang" class="status-pill emerald">Negative</span>
+            </div>
+            <select id="exang" class="select-control">
+              <option value="0" selected>No (Negative)</option>
+              <option value="1">Yes (Positive)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 14px;">
+          <!-- ST Depression (oldpeak) -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" for="oldpeak">ST Depression (oldpeak)</label>
+              <span id="pill_oldpeak" class="status-pill emerald">Normal (&lt;1.0)</span>
+            </div>
+            <div class="dual-control-wrap">
+              <div class="input-stepper-row">
+                <button type="button" class="step-btn" data-step="oldpeak:-0.2">−</button>
+                <input type="number" id="oldpeak" class="number-input" step="0.1" value="0.1" min="0" max="6.2">
+                <span class="input-unit">mm</span>
+                <button type="button" class="step-btn" data-step="oldpeak:0.2">+</button>
+              </div>
+              <input type="range" id="slider_oldpeak" class="range-slider" min="0" max="6.2" step="0.1" value="0.1">
+              <div class="slider-limits"><span>0.0</span><span>1.0 (Normal)</span><span>6.2</span></div>
+            </div>
+          </div>
+
+          <!-- Slope of Peak ST -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" for="slope">Slope of Peak ST</label>
+              <span id="pill_slope" class="status-pill emerald">Downsloping</span>
+            </div>
+            <select id="slope" class="select-control">
+              <option value="2" selected>2: Downsloping (Normal)</option>
+              <option value="1">1: Flat (Equivocal)</option>
+              <option value="0">0: Upsloping (Ischemic)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Section 4: Fluoroscopy & Scintigraphy -->
+      <div class="form-section">
+        <div class="form-section-title">
+          <span>🔬</span> Fluoroscopy & Scintigraphy
+        </div>
+
+        <div class="grid-2">
+          <!-- Major Vessels -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" for="ca">Major Vessels Calcified</label>
+              <span id="pill_ca" class="status-pill emerald">0 (Clear)</span>
+            </div>
+            <select id="ca" class="select-control">
+              <option value="0" selected>0 Vessels (Clear)</option>
+              <option value="1">1 Vessel Blocked</option>
+              <option value="2">2 Vessels Blocked</option>
+              <option value="3">3 Vessels Blocked</option>
+            </select>
+          </div>
+
+          <!-- Thallium Stress Status -->
+          <div class="form-group">
+            <div class="label-row">
+              <label class="form-label" for="thal">Thallium Scintigraphy</label>
+              <span id="pill_thal" class="status-pill emerald">Normal</span>
+            </div>
+            <select id="thal" class="select-control">
+              <option value="1" selected>1: Normal Perfusion</option>
+              <option value="2">2: Fixed Defect (Old Infarct)</option>
+              <option value="3">3: Reversible Defect (Active)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick What-If Adjusters Toolbar -->
+      <div class="whatif-toolbar">
+        <div class="whatif-title">
+          <span>⚡ Live What-If Testing Toolbar</span>
+          <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: normal;">(Instant parameter shifts)</span>
+        </div>
+        <div class="whatif-buttons">
+          <button type="button" class="whatif-btn" data-adjust="trestbps:15">+15 BP</button>
+          <button type="button" class="whatif-btn" data-adjust="trestbps:-15">-15 BP</button>
+          <button type="button" class="whatif-btn" data-adjust="chol:30">+30 Chol</button>
+          <button type="button" class="whatif-btn" data-adjust="chol:-30">-30 Chol</button>
+          <button type="button" class="whatif-btn" data-adjust="oldpeak:1.0">+1.0 ST Dip</button>
+          <button type="button" class="whatif-btn" data-toggle="exang">Toggle Angina</button>
+          <button type="button" class="whatif-btn" data-adjust="ca:1">+1 Vessel</button>
+        </div>
+      </div>
+
+      <!-- Form Buttons -->
+      <div class="action-cluster">
+        <button type="button" id="btnPredict" class="btn-primary">
+          <span>🩺</span> Recalculate Diagnostic Risk
+        </button>
+        <button type="button" id="btnResetDefaults" class="btn-reset">
+          <span>🔄</span> Reset
+        </button>
+      </div>
+    </section>
+
+    <!-- Right Column: Diagnostic Assessment & Analytics -->
+    <section class="results-container" aria-labelledby="resultsHeading">
+      <!-- Radial Speedometer Gauge Card (Violet & Green Theme) -->
+      <div id="gaugeCard" class="glass-panel gauge-card status-low">
+        <div class="gauge-svg-wrapper">
+          <svg class="gauge-svg" viewBox="0 0 320 170">
+            <defs>
+              <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#10b981" />
+                <stop offset="35%" stop-color="#34d399" />
+                <stop offset="70%" stop-color="#c084fc" />
+                <stop offset="100%" stop-color="#8b5cf6" />
+              </linearGradient>
+            </defs>
+            <!-- Gauge Track Background -->
+            <path class="gauge-track" d="M 45 150 A 115 115 0 0 1 275 150" />
+            <!-- Gauge Dynamic Fill -->
+            <path id="gaugeFill" class="gauge-fill" d="M 45 150 A 115 115 0 0 1 275 150" />
+            <!-- Gauge Ticks -->
+            <text x="40" y="166" class="gauge-tick-text">0%</text>
+            <text x="160" y="24" text-anchor="middle" class="gauge-tick-text">50%</text>
+            <text x="280" y="166" text-anchor="end" class="gauge-tick-text">100%</text>
+            <!-- Needle -->
+            <g id="gaugeNeedleGroup" class="gauge-needle-group" style="transform: rotate(-90deg);">
+              <line x1="160" y1="150" x2="160" y2="48" stroke="var(--needle-color, #ffffff)" stroke-width="3.5" stroke-linecap="round" />
+              <polygon points="160,38 153,52 167,52" fill="var(--needle-color, #ffffff)" />
+              <circle cx="160" cy="150" r="10" fill="var(--accent-primary)" stroke="var(--accent-secondary)" stroke-width="3" />
+            </g>
+          </svg>
+        </div>
+
+        <!-- Readout Box Cleanly Separated Below Needle: Zero Overlap -->
+        <div class="gauge-readout-wrap">
+          <div id="probNumber" class="gauge-percent" style="color: #10b981;">0.4%</div>
+          <div class="gauge-label">Estimated Cardiovascular Disease Likelihood</div>
+        </div>
+
+        <div class="risk-badge-row">
+          <div id="riskBadge" class="risk-level-badge" style="background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.45);">
+            <span id="riskIcon">🟢</span>
+            <span id="riskHeadline">LOW CARDIOVASCULAR RISK</span>
+          </div>
+          <p id="riskSubhead" class="risk-subhead-text">
+            Patient physiological indicators currently reflect standard baseline cardiac function with minimal ischemic drivers.
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Dynamic ECG Monitor Card (Neon Green Trace on Violet Grid) -->
+      <article class="glass-panel ecg-card">
+        <div class="ecg-header">
+          <div class="ecg-title">
+            <span>📈</span> Live Dynamic ECG Telemetry
+          </div>
+          <div class="ecg-telemetry-stats">
+            <span>BPM: <strong id="telemetryBpm" class="stat-live-bpm">182</strong></span>
+            <span>ST: <strong id="telemetrySt" style="color: var(--accent-violet-light);">0.1 mm</strong></span>
+            <span>RHYTHM: <strong id="telemetryRhythm" style="color: var(--accent-emerald);">Sinus</strong></span>
+          </div>
+        </div>
+        <div class="ecg-canvas-wrapper">
+          <canvas id="ecgCanvas" class="ecg-canvas" width="600" height="90"></canvas>
+        </div>
+      </article>
+
+      <!-- Key Clinical Risk Drivers -->
+      <article class="glass-panel factors-card">
+        <div class="factors-header">
+          <h3 class="factors-title">
+            <span>🔍 Clinical Risk Drivers Breakdown</span>
+          </h3>
+          <div class="factors-legend">
+            <span class="legend-item"><span class="legend-dot red"></span> Increases Risk (Violet)</span>
+            <span class="legend-item"><span class="legend-dot green"></span> Lowers Risk (Green)</span>
+          </div>
+        </div>
+        <div id="factorsList" class="factor-bars-list">
+          <!-- Dynamically populated -->
+        </div>
+      </article>
+
+      <!-- Personalized Clinical Guidance -->
+      <article class="glass-panel guidance-card">
+        <div class="panel-header" style="margin-bottom: 12px; padding-bottom: 8px;">
+          <h3 class="factors-title">
+            <span>💡 Tailored Clinical Decision Protocol</span>
+          </h3>
+          <span style="font-size: 0.72rem; color: var(--accent-emerald-bright); font-weight: 700;">AHA/ACC Guideline Aligned</span>
+        </div>
+        <div class="guidance-box">
+          <ul id="guidanceList" class="guidance-list">
+            <!-- Dynamically populated -->
+          </ul>
+        </div>
+      </article>
+
+      <!-- Model Performance Strip -->
+      <div class="stats-strip">
+        <div class="stat-item">
+          <div class="stat-val">86.89%</div>
+          <div class="stat-label">Model Accuracy</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">90.62%</div>
+          <div class="stat-label">Sensitivity / Recall</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">85.29%</div>
+          <div class="stat-label">Precision</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">303</div>
+          <div class="stat-label">Gold Dataset Cases</div>
+        </div>
+      </div>
+
+      <!-- Export Utilities Bar -->
+      <div class="export-utility-row">
+        <button type="button" id="btnPrintReportBottom" class="btn-utility">
+          <span>🖨️</span> Print Clinical Report
+        </button>
+        <button type="button" id="btnCopySummary" class="btn-utility">
+          <span>📋</span> Copy Assessment Summary
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toastNotice" class="toast-notice">
+    <span id="toastIcon">✅</span>
+    <span id="toastMsg">Clinical summary copied to clipboard!</span>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
